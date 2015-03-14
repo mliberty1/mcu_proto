@@ -1,0 +1,4 @@
+
+spark:
+    device: 'your_device'
+    token: 'your_access_token'
