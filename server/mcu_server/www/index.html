@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta content="utf-8" http-equiv="encoding">  
+    <title>MCU Proto</title>
+    <script>
+      var websocket = new WebSocket('ws://' + location.host + '/ws');
+      websocket.onopen    = function (evt) { console.log("Connected to WebSocket server."); websocket.send("onopen"); };
+      websocket.onclose   = function (evt) { console.log("Disconnected"); };
+      websocket.onmessage = function (evt) { document.getElementById('msg').innerHTML = evt.data; };
+      websocket.onerror   = function (evt) { console.log('Error occured: ' + evt.data); };
+    </script>
+  </head>
+  <body>
+    <h1>Accelerate Your Next Connected Device Prototype</h1>
+    Message: <span id="msg" />
+  </body>
+</html>

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Form</title>
+</head>
+<body>
+    <h1>Spark demo</h1>
+    <form method='GET' target="submit_frame">
+        <input type='hidden' name='mode' value='ROTATE_HUE'>
+        <input type='submit' value='Rotate Hue'></p>
+    </form>
+    <form method='GET' target="submit_frame">
+        <input type='hidden' name='mode' value='OFF'>
+        <input type='submit' value='Off'></p>
+    </form>
+    <p>{{message}}</p>
+    <iframe name="submit_frame" style="display:none;"></iframe>
+</body>
+</html>
