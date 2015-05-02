@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 # Copyright 2015 Jetperch LLC
+# This file is licensed under the MIT License
+# http://opensource.org/licenses/MIT
 
 # Requires Python 3.x with packages:
 # pip3 install cherrypy ws4py requests Jinja2
@@ -54,11 +56,36 @@ class Publisher(WebSocket):
             subscriber.send(msg)
 
 
+def electricimp(mode='OFF'):
+    """Control the Electric Imp device.
+    
+    :param mode: The mode which is defined by the agent and is either
+        "OFF" or "rotate_hue".
+    """
+    url = 'https://agent.electricimp.com/%s' % AUTH['electric_imp']['agent']
+    args = {'setMode': mode}
+    print('post to %s' % url)
+    requests.post(url, data=args)
+
+    
+def spark(mode='OFF'):
+    """Control the Spark Core device.
+    
+    :param mode: The mode which is defined by the Spark code and is either
+        "OFF" or "ROTATE_HUE".
+    """
+    url = 'https://api.spark.io/v1/devices/%s/mode' % AUTH['spark']['device']
+    args = {'access_token': AUTH['spark']['token'],
+            'params': mode}
+    print('post to %s' % url)
+    requests.post(url, data=args)
+
+    
 class McuProtoServer(object):
     def __init__(self):
         self.permissions = OrderedDict([
             ('ElectricImp', False),
-            ('Spark', False),
+            ('SparkCore', False),
             ('CC3200', False),
             ('mbed', False),
         ])
@@ -78,19 +105,14 @@ class McuProtoServer(object):
     def electricimp(self, mode='OFF'):
         if not self.permissions['ElectricImp']:
             return "access denied"
-        url = 'https://agent.electricimp.com/%s' % AUTH['electric_imp']['agent']
-        args = {'setMode': mode}
-        requests.post(url, data=args)
+        electricimp(mode)
         return "Done!"
-        
+    
     @cherrypy.expose
-    def spark(self, mode='ROTATE_HUE'):
-        if not self.permissions['Spark']:
+    def spark(self, mode='OFF'):
+        if not self.permissions['SparkCore']:
             return "access denied"
-        url = 'https://api.spark.io/v1/devices/%s/mode' % AUTH['spark']['device']
-        args = {'access_token': AUTH['spark']['token'],
-                'params': mode}
-        requests.post(url, data=args)
+        spark(mode)
         return "Done!"
     
     @cherrypy.expose
@@ -112,14 +134,21 @@ class McuProtoServer(object):
         if device is None:
             status = ""
         elif device in self.permissions:
-            self.permissions[device] = not self.permissions[device]
+            permissions = not self.permissions[device]
+            self.permissions[device] = permissions
+            if not permissions:
+                if device == 'ElectricImp':
+                    electricimp()
+                elif device == 'SparkCore':
+                    spark()
+                else:
+                    Publisher.publish('%s_OFF' % device)
             status = "success"
         else:
             status = "Device not found: %s" % device
         return self.render('auth.html', status=status, permissions=self.permissions)
 
 
-        
 if __name__ == '__main__':
     cherrypy.config.update({
         'server.socket_host': '0.0.0.0',
