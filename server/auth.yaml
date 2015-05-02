@@ -1,4 +1,15 @@
 
+# To change the repository:
+# git update-index --no-skip-worktree server/auth.yaml
+# Make change
+# git update-index --skip-worktree server/auth.yaml
+
+server:
+    admin: 'your_password'
+
+electric_imp:
+    agent: 'your_device'
+
 spark:
     device: 'your_device'
     token: 'your_access_token'
