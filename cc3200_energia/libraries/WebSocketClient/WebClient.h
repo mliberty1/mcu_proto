@@ -18,11 +18,13 @@
 #include <WiFiClient.h>
 //#include <EthernetClient>
 
+typedef void (*onConnect)();
 typedef void (*onMessage)(char* msg);
 
 class WebsocketClient
 {
   private:
+  onConnect _fconnect;
   onMessage _fnc;
   WiFiClient client;
 //  EthernetClient client;
@@ -38,7 +40,8 @@ class WebsocketClient
   void connectRetry();
 
 public:
-  WebsocketClient(char* host, uint16_t port, char* path, boolean ssl, onMessage fnc);
+  WebsocketClient(char* host, uint16_t port, char* path, boolean ssl, 
+                  onConnect fconnect, onMessage fmessage);
   boolean connect();
   int run();
   boolean sendPing();

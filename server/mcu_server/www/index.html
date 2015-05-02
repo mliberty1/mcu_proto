@@ -3,10 +3,13 @@
   <head>
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
     <meta content="utf-8" http-equiv="encoding">  
+    <link rel="stylesheet" type="text/css" href="/static/style.css">
     <title>MCU Proto</title>
     <script>
       var websocket = new WebSocket('ws://' + location.host + '/ws');
-      websocket.onopen    = function (evt) { console.log("Connected to WebSocket server."); websocket.send("onopen"); };
+      websocket.onopen    = function (evt) { 
+        console.log("Connected to WebSocket server."); 
+        websocket.send('browser_connected'); };
       websocket.onclose   = function (evt) { console.log("Disconnected"); };
       websocket.onmessage = function (evt) { document.getElementById('msg').innerHTML = evt.data; };
       websocket.onerror   = function (evt) { console.log('Error occured: ' + evt.data); };
@@ -14,6 +17,91 @@
   </head>
   <body>
     <h1>Accelerate Your Next Connected Device Prototype</h1>
-    Message: <span id="msg" />
+    
+    <p><a href="auth">Manage</a></p>
+    
+    <div class="device_table"><table>
+      <tr>
+        <td>Device</td>
+        <td>IDE</td>
+        <td>Off</td>
+        <td>On</td>
+      </tr>
+      
+      <tr>
+      <td class="device_name">Electric Imp</td>
+      <td><a href="https://ide.electricimp.com">IDE</a></td>
+      <td>
+        <form method='GET' action="electricimp" target="response_frame">
+          <input type='hidden' name='mode' value='OFF'>
+          <input type='submit' value='Off'>
+        </form>
+      </td>
+      <td>
+        <form method='GET' action="electricimp" target="response_frame">
+          <input type='hidden' name='mode' value='rotate_hue'>
+          <input type='submit' value='On'>
+        </form>
+      </td>
+      </tr>
+      
+      <tr>
+      <td class="device_name">Spark Core</td>
+      <td><a href="https://build.spark.io/build">IDE</a></td>
+      <td>
+        <form method='GET' action="spark" target="response_frame">
+          <input type='hidden' name='mode' value='OFF'>
+          <input type='submit' value='Off'>
+        </form>
+      </td>
+      <td>
+        <form method='GET' action="spark" target="response_frame">
+          <input type='hidden' name='mode' value='ROTATE_HUE'>
+          <input type='submit' value='On'>
+        </form>
+      </td>
+      </tr>
+      
+      <tr>
+      <td class="device_name">CC3200</td>
+      <td><a href="http://energia.nu/">Energia</a</td>
+      <td>
+        <form method='GET' action="publish" target="response_frame">
+          <input type='hidden' name='msg' value='CC3200_OFF'>
+          <input type='submit' value='Off'>
+        </form>
+      </td>
+      <td>
+        <form method='GET' action="publish" target="response_frame">
+          <input type='hidden' name='msg' value='CC3200_ON'>
+          <input type='submit' value='On'>
+        </form>
+      </td>
+      </tr>
+      
+      <tr>
+      <td class="device_name">FRDM-K64F</td>
+      <td><a href="http://developer.mbed.org/compiler/">mbed</a></td>
+      <td>
+        <form method='GET' action="publish" target="response_frame">
+          <input type='hidden' name='msg' value='mbed_OFF'>
+          <input type='submit' value='Off'>
+        </form>
+      </td>
+      <td>
+        <form method='GET' action="publish" target="response_frame">
+          <input type='hidden' name='msg' value='mbed_ON'>
+          <input type='submit' value='On'>
+        </form>
+      </td>
+      </tr>
+    
+    </table></div>
+    
+    <div>
+    <p>Response:</p>
+    <iframe name="response_frame" class="response_frame"></iframe>
+    </div>
+
   </body>
 </html>

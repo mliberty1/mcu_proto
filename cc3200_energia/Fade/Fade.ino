@@ -15,16 +15,27 @@ char websocket_server[] = "mcu_proto.jetperch.com";
 int websocket_port = 80;
 char websocket_path[] = "/ws";
 
-boolean draw_en = true;
+boolean draw_en = false;
 WiFiClient client;
 WebsocketClient webSocketClient(websocket_server, websocket_port, websocket_path, false, wscMessage);
+
+char responseMessage[] = "{\"cmd\": \"subscribe\", \"channel\": \"CC3200\"}";
+
+void wscConnect() {
+  webSocketClient.sendMessage(responseMessage, sizeof(responseMessage));
+}
 
 void wscMessage(char* msg)
 {
   Serial.print("Got msg : ");
   Serial.println(msg);
-  digitalWrite(LED, !digitalRead(LED));
-  draw_en = !draw_en;
+  
+  if (strcmp(msg, "CC3200_ON") == 0) {
+    draw_en = true;
+  } else if (strcmp(msg, "CC3200_OFF") == 0) {
+    draw_en = false;
+  }
+  digitalWrite(LED, !draw_en);
 }
 
 void wifi_connect() {
@@ -94,6 +105,8 @@ void loop() {
   if (draw_en) {
     lScroll();
     drawLine(8, 1, 8, 8);
+  } else {
+    vClear();
   }
   ++color;
   Transfer();

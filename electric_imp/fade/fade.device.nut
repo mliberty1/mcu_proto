@@ -109,7 +109,7 @@ class NeoPixels {
 // SPI Configuration for NeoPixels
 PIXELS <- 24
 spi <- hardware.spi257
-spi.configure(MSB_FIRST, 7500)
+spi.configure(MSB_FIRST, 7000)
 pixels <- NeoPixels(hardware.spi257, PIXELS)
 
 

@@ -1,0 +1,79 @@
+body {
+    text-align:center;
+    background-image: url('/static/header.jpg');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center top;
+    margin: 100px; 
+}
+
+.device_table {
+	margin:0px;padding:0px;
+
+}
+.device_table table{
+    border-collapse: collapse;
+    border-spacing: 0;
+	height:100%;
+	margin:0px;
+    padding:0px;
+	box-shadow: 10px 10px 5px #888888;
+	border:1px solid #000000;
+    margin-left:auto; 
+    margin-right:auto;
+}
+.device_table tr:hover td{
+	
+}
+.device_table tr:nth-child(odd){ background-color:#ddddff; }
+.device_table tr:nth-child(even)    { background-color:#ffffff; }.device_table td{
+	vertical-align:middle;
+	border:1px solid #000000;
+	border-width:0px 1px 1px 0px;
+	text-align:left;
+	padding:7px;
+	font-size:14px;
+	font-family:Arial;
+	font-weight:normal;
+	color:#000000;
+}.device_table tr:last-child td{
+	border-width:0px 1px 0px 0px;
+}.device_table tr td:last-child{
+	border-width:0px 0px 1px 0px;
+}.device_table tr:last-child td:last-child{
+	border-width:0px 0px 0px 0px;
+}
+.device_table tr:first-child td{
+	background:-o-linear-gradient(bottom, #005fbf 5%, #003f7f 100%);	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #005fbf), color-stop(1, #003f7f) );
+	background:-moz-linear-gradient( center top, #005fbf 5%, #003f7f 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr="#005fbf", endColorstr="#003f7f");	background: -o-linear-gradient(top,#005fbf,003f7f);
+
+	background-color:#005fbf;
+	border:0px solid #000000;
+	text-align:center;
+	border-width:0px 0px 1px 1px;
+	font-size:18px;
+	font-family:Arial;
+	font-weight:bold;
+	color:#ffffff;
+}
+.device_table tr:first-child:hover td{
+	background:-o-linear-gradient(bottom, #005fbf 5%, #003f7f 100%);	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #005fbf), color-stop(1, #003f7f) );
+	background:-moz-linear-gradient( center top, #005fbf 5%, #003f7f 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr="#005fbf", endColorstr="#003f7f");	background: -o-linear-gradient(top,#005fbf,003f7f);
+
+	background-color:#005fbf;
+}
+.device_table tr:first-child td:first-child{
+	border-width:0px 0px 1px 0px;
+}
+.device_table tr:first-child td:last-child{
+	border-width:0px 0px 1px 1px;
+}
+.device_table.device_name {
+	font-weight:bold;
+}
+
+.response_frame {
+    width:100%;
+}

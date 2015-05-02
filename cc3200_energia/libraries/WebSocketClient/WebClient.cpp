@@ -18,8 +18,10 @@
 const uint8_t CONNECTION_TIMER_DEFAULT = 100;
 
 
-WebsocketClient::WebsocketClient(char* host, uint16_t port, char* path, boolean ssl, onMessage fnc)
+WebsocketClient::WebsocketClient(char* host, uint16_t port, char* path, boolean ssl, 
+        onConnect fconnect, onMessage fmessage);)
 {
+  _fconnect = fconnect;
   _host = host;
   _port = port;
   _path = path;
@@ -176,6 +178,9 @@ boolean WebsocketClient::connect() {
         return false;
     }
     _connected = true;
+    if (_fconnect) {
+        _fconnect();
+    }
     return true;
 }
 
