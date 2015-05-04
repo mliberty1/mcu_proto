@@ -149,6 +149,7 @@ function hsv2rgb(h, s, v) {
 _hue <- 0.0         // Starting pixel hue (0.0 .. 1.0)
 _saturation <- 1.0  // Pixel saturation (0.0 .. 1.0)
 _value <- 0.1       // Pixel value / brightness (0.0 .. 1.0)
+_hue_incr <- 0.01
  
 function rotate() {
     // now fill the clearblob
@@ -162,7 +163,7 @@ function rotate() {
         h = h + 1.0 / PIXELS
     }
 
-    _hue = _hue + 0.01
+    _hue = _hue + _hue_incr
     _hue = _hue - math.floor(_hue)
 }
  
