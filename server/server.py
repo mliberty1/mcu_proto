@@ -13,7 +13,6 @@ import requests
 from ws4py.server.cherrypyserver import WebSocketPlugin, WebSocketTool
 from ws4py.websocket import WebSocket
 import yaml
-import json
 import os
 from jinja2 import Environment, PackageLoader
 from collections import OrderedDict
@@ -83,11 +82,46 @@ def spark(mode='OFF'):
     
 class McuProtoServer(object):
     def __init__(self):
-        self.permissions = OrderedDict([
-            ('ElectricImp', False),
-            ('SparkCore', False),
-            ('CC3200', False),
-            ('mbed', False),
+        # Map device identifier to a dict of configuration properties
+        #   name: The user-meaningful device name.
+        #   ide_name: The user-meaningful IDE name.
+        #   ide_url: The URL for the IDE suitable for a web browser.
+        #   permission: The current public permission: true is enabled.
+        #   OFF: The callable to turn off the device.
+        #   ON: The callable to turn on the device.
+        self.devices = OrderedDict([
+            ('ElectricImp', {
+                'name': 'Electric Imp',
+                'ide_name': 'IDE',
+                'ide_url': 'https://ide.electricimp.com',
+                'permission': False, 
+                'OFF': lambda: electricimp('OFF'),
+                'ON': lambda: electricimp('rotate_hue')
+            }),
+            ('SparkCore', {
+                'name': 'Spark Core',
+                'ide_name': 'IDE',
+                'ide_url': 'https://build.spark.io/build',
+                'permission': False,
+                'OFF': lambda: spark('OFF'),
+                'ON': lambda: spark('ROTATE_HUE')
+            }),
+            ('CC3200', {
+                'name': 'CC3200', 
+                'ide_name': 'Energia',
+                'ide_url': 'http://energia.nu/',
+                'permission': False,
+                'OFF': lambda: self.publish('CC3200_OFF'),
+                'ON': lambda: self.publish('CC3200_ON')
+            }),
+            ('mbed', {
+                'name': 'FRDM-K64F',
+                'ide_name': 'mbed',
+                'ide_url': 'http://developer.mbed.org/compiler/',
+                'permission': False,
+                'OFF': lambda: self.publish('mbed_OFF'),
+                'ON': lambda: self.publish('mbed_ON')
+            }),
         ])
         self.env = Environment(loader=PackageLoader('mcu_server', 'www'),
                                trim_blocks=True,
@@ -99,32 +133,30 @@ class McuProtoServer(object):
     
     @cherrypy.expose
     def index(self):
-        return self.render('index.html')
-
-    @cherrypy.expose
-    def electricimp(self, mode='OFF'):
-        if not self.permissions['ElectricImp']:
-            return "access denied"
-        electricimp(mode)
-        return "Done!"
-    
-    @cherrypy.expose
-    def spark(self, mode='OFF'):
-        if not self.permissions['SparkCore']:
-            return "access denied"
-        spark(mode)
-        return "Done!"
+        return self.render('index.html', status='', devices=self.devices, auth=False)
     
     @cherrypy.expose
     def ws(self):
         pass # delegate to handler
-        
+
+    @cherrypy.expose
+    def control(self, device, action):
+        if device not in self.devices:
+            return 'device not found'
+        d = self.devices[device]
+        if not d['permission']:
+            return 'access denied'
+        if action not in d:
+            return 'control not found'
+        d[action]()
+        return 'done!'
+
     @cherrypy.expose
     def publish(self, msg):
         parts = msg.split('_', 1)
         if len(parts) == 2:
-            permission = self.permissions.get(parts[0])
-            if not permission:
+            device = self.devices.get(parts[0])
+            if device is not None and not device['permission']:
                 return "access denied"
         Publisher.publish(msg)
         return "Done!"
@@ -133,20 +165,16 @@ class McuProtoServer(object):
     def auth(self, device=None):
         if device is None:
             status = ""
-        elif device in self.permissions:
-            permissions = not self.permissions[device]
-            self.permissions[device] = permissions
+        elif device in self.devices:
+            d = self.devices[device]
+            permissions = not d['permission']
+            d['permission'] = permissions
             if not permissions:
-                if device == 'ElectricImp':
-                    electricimp()
-                elif device == 'SparkCore':
-                    spark()
-                else:
-                    Publisher.publish('%s_OFF' % device)
+                self.control(device, 'OFF')
             status = "success"
         else:
             status = "Device not found: %s" % device
-        return self.render('auth.html', status=status, permissions=self.permissions)
+        return self.render('index.html', status=status, devices=self.devices, auth=True)
 
 
 if __name__ == '__main__':
