@@ -151,13 +151,7 @@ class McuProtoServer(object):
         d[action]()
         return 'done!'
 
-    @cherrypy.expose
     def publish(self, msg):
-        parts = msg.split('_', 1)
-        if len(parts) == 2:
-            device = self.devices.get(parts[0])
-            if device is not None and not device['permission']:
-                return "access denied"
         Publisher.publish(msg)
         return "Done!"
 
@@ -170,7 +164,8 @@ class McuProtoServer(object):
             permissions = not d['permission']
             d['permission'] = permissions
             if not permissions:
-                self.control(device, 'OFF')
+                print('Turning off %s' % d['name'])
+                d['OFF']()
             status = "success"
         else:
             status = "Device not found: %s" % device
