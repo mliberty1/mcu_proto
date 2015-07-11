@@ -67,14 +67,14 @@ def electricimp(mode='OFF'):
     requests.post(url, data=args)
 
     
-def spark(mode='OFF'):
-    """Control the Spark Core device.
+def particle(mode='OFF'):
+    """Control the Particle Core device.
     
     :param mode: The mode which is defined by the Spark code and is either
         "OFF" or "ROTATE_HUE".
     """
-    url = 'https://api.spark.io/v1/devices/%s/mode' % AUTH['spark']['device']
-    args = {'access_token': AUTH['spark']['token'],
+    url = 'https://api.particle.io/v1/devices/%s/mode' % AUTH['particle']['device']
+    args = {'access_token': AUTH['particle']['token'],
             'params': mode}
     print('post to %s' % url)
     requests.post(url, data=args)
@@ -98,13 +98,13 @@ class McuProtoServer(object):
                 'OFF': lambda: electricimp('OFF'),
                 'ON': lambda: electricimp('rotate_hue')
             }),
-            ('SparkCore', {
-                'name': 'Spark Core',
+            ('ParticleCore', {
+                'name': 'Particle Core',
                 'ide_name': 'IDE',
-                'ide_url': 'https://build.spark.io/build',
+                'ide_url': 'https://build.particle.io/build',
                 'permission': False,
-                'OFF': lambda: spark('OFF'),
-                'ON': lambda: spark('ROTATE_HUE')
+                'OFF': lambda: particle('OFF'),
+                'ON': lambda: particle('ROTATE_HUE')
             }),
             ('CC3200', {
                 'name': 'CC3200', 
